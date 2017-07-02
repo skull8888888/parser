@@ -2,30 +2,58 @@ const express = require('express')
 const cheerio = require('cheerio')
 const app = express()
 const request = require('request')
+const url = require('valid-url')
 
+app.all('/version', (req,res) => {
+  res.send('v. 0.0.1')
+})
 
-app.get('/get', (req,res) => {
+app.get('/parse', (req,res) => {
   
-  request.get(req.query.site, (err,r,body) => {
+  let site = req.query.site
+  let css = req.query.css
+
+  if(site && css) {
     
-    const $ = cheerio.load(body)
+    if (url.isHttpUri(site) || url.isHttpsUri(site)){
+
+      request.get(site, (err,r,body) => {
+
+        const $ = cheerio.load(body)
+        
+        var result = {
+          success: true,
+          elements: []
+        }
+
+        console.log(css)
+        let els = $(css)
+
+        els.each((index, el) => {
+
+          let element = {}
+          element.tag = el.tagName
+          element.attribs = el.attribs
+          result.elements.push(element)
+        })
+
+        res.json(result)
+
+      })
     
-    var arr = []
+    } else {
+      res.json({
+        success: false,
+        error: 'not valid url'
+      })
+    }
 
-    console.log(req.query.css)
-    let els = $(req.query.css)
-
-    els.each((index, el) => {
-
-      let element = {}
-      element.tag = el.tagName
-      element.attribs = el.attribs
-      arr.push(element)
+  } else {
+    res.json({
+      success: false,
+      error: '2 arguments required in the request query - site and css'
     })
-
-    res.json(arr)
-
-  })
+  }
 
 })
 
