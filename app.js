@@ -4,8 +4,13 @@ const app = express()
 const request = require('request')
 const url = require('valid-url')
 
+
+app.all('/', (req,res) => {
+  res.send('fastparser is the easiest way to parse a web page')
+})
+
 app.all('/version', (req,res) => {
-  res.send('v. 0.0.1')
+  res.send('v. 0.0.2')
 })
 
 app.get('/parse', (req,res) => {
