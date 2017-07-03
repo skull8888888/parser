@@ -10,7 +10,7 @@ app.all('/', (req,res) => {
 })
 
 app.all('/version', (req,res) => {
-  res.send('v. 0.0.2')
+  res.send('v. 0.0.3')
 })
 
 app.get('/parse', (req,res) => {
@@ -37,8 +37,12 @@ app.get('/parse', (req,res) => {
         els.each((index, el) => {
 
           let element = {}
+
           element.tag = el.tagName
           element.attribs = el.attribs
+
+          element.text = $(el).text()
+
           result.elements.push(element)
         })
 
